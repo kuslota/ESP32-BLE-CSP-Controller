@@ -59,13 +59,21 @@ void loop() {
       BUTTON4_PIN,
       BUTTON1_PIN 
     };
-    const char keyMap[8] = { 'b', 'e', '[', ']', 'z', 'y', ']', '\\' };
+    const char keyMap[8] = { 'p', 'b', 'w', 0, ',', '.', ']', '\\' };
+    // index 3 ('SHIFT') will be handled separately as a modifier key
     for (int i = 0; i < 8; i++) {
       bool current = digitalRead(pins[i]);
       if (current == LOW && lastState[i] == HIGH) {
-        bleKeyboard.write(keyMap[i]);
+        if (i == 3) {
+          bleKeyboard.press(KEY_LEFT_SHIFT);
+        } else {
+          bleKeyboard.write(keyMap[i]);
+        }
         Serial.print("Sent key: ");
         Serial.println(keyMap[i]);
+        if (i == 3) {
+          bleKeyboard.release(KEY_LEFT_SHIFT);
+        }
       }
       lastState[i] = current;
     }
